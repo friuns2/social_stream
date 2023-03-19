@@ -17,6 +17,7 @@
 			--scale-output: 1.0;
 			--font-color: #FFF;
 			--font-color-name: #DDD;
+			--font-family: 'Sora';
 			--background-color: #36393F;
 			--menu-background-color: #2F3136;
 			--link-color: #5AF;
@@ -172,7 +173,7 @@
 		}
 
 		body {
-			font-family: 'Sora', Roboto, Arial, sans-serif;
+			font-family: var(--font-family), 'Sora', Roboto, Arial, sans-serif;
 			color: var(--font-color);
 			margin: 0 0;
 			background-color: var(--background-color);
@@ -271,7 +272,8 @@
 			max-height: 24px;
 		} 
 		.notcompactmode .hl-message img{
-			height: 17px;
+/* ?#1			height: 17px; 	I'm not sure if this change is needed any more, but this and the other 3 commented out height parameters
+					basically prevent the fadeOutNode()'s height->0 transition from working as intended so I've included them anyway...*/
 			max-height: 17px;
 		}
 
@@ -322,7 +324,7 @@
 			display:inline-block;
 			margin:3px;
 			min-width: 75px;
-			min-height: 75px;
+/*			min-height: 75px;*/
 		}
 		.hl-leftside img {
 			max-height:100%;
@@ -392,7 +394,7 @@
 			cursor: var(--cursor-type);
 			width:fit-content;
 			background-color: var(--highlight-base);
-			min-height: 24px;
+			max-height: 500px; 
 		}
 
 		.highlight-chat.expand{
@@ -567,7 +569,7 @@
 			min-width: max(135px,12vw);
 			max-width: max(220px, 25vw);
 			white-space: unset;
-			min-height: 24px;
+/* ?#3			min-height: 24px; */
 			line-height: max(var(--author-font-size) , var(--message-line-height));
 		}
 
@@ -608,7 +610,7 @@
 			width:100%;
 			padding: 2px 1px;
 			margin: 0;
-			min-height:27px;
+/* #?4			min-height:27px; 	// last one (see comment line 275) */
 		}
 
 		.odd:not(.expand){ 
@@ -1425,11 +1427,17 @@
 			right: -5px;
 		}
 
+		#blank { /* an invisible block set as a permanent member of the scrolling window enables smooth scrolling even when only a few chats are present */
+			padding-top: 2000px;
+			padding-bottom: 20px;
+			opacity: 0;
+		}
+
 	</style>
 </head>
 <body id="main" class='electronDraggable'>
 	<div id="pinned" class="output notcompactmode"></div>
-	<div id="output" class="output notcompactmode"></div>
+	<div id="output" class="output notcompactmode"><div id="blank" class="queued"><p>&nbsp</p></div></div><!-- the blank div survives culling because of queued class -->
 	<div id="menu" class="electronDraggable">
 		<!-- Main buttons -->
 
@@ -3423,11 +3431,11 @@
 				node.remove();
 			},500,node);
 		} else if (scrolltype === "smooth"){
-			node.style.transition =  "all linear 0.5s";
-			node.style.height =  "0"; 
+			node.style.transition =  "all ease 5s";
+			node.style.maxHeight =  "0"; 
 			setTimeout(function(node){
 				node.remove();
-			},500,node);
+			},5200,node);
 		} else {
 			node.remove();
 		}
@@ -3483,7 +3491,6 @@
 		tmp.innerHTML = html;
 		return tmp.textContent || tmp.innerText || "";
 	}
-
 
 	function processData(data){
 		//console.log(data);
