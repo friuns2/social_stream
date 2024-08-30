@@ -2,15 +2,17 @@ Please see https://socialstream.ninja for an updated version of this README.md p
 --------
 
 # Social Stream Ninja
-Consolidates your live social messaging streams and more
+Consolidates your live social messaging streams and more. Free.
 
  [Jump to Download and Install instructions](#to-install)
 
 - Supports live automated two-way chat messaging with Facebook, Youtube, Twitch, Zoom, and dozens more
 - Includes a "featured chat" overlay, with messages selectable via the dockable dashboard; auto or manual selection.
 - Supports bot-commands and automated chat responses, with custom logic supported via scriptable plugin file.
-- Text-to-speech support, along with many other niche features supported.
+- Support for LLMs, including native Ollama API support; powering AI-based moderation, chat, RAG, and custom instructions.
+- Text-to-speech support, including free, premium and ultra-premium TTS services supported.
 - Multi-channel source-icon support, so you can differentiate between different streams and creators
+- Message relaying support; send messages from one platform to other platforms automatically
 - No user login, API key, or permission needed to capture the chat messages from most sites and services.
 - Queuing of messages for later highlighting
 - Free community support at https://discord.socialstream.ninja
@@ -55,3 +57,4 @@ This project contains inspiration by my past project, chat.overlay.ninja, which 
 <a href="https://github.com/steveseguin/social_stream/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=steveseguin/social_stream" />
 </a>
+
