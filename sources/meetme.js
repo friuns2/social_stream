@@ -24,7 +24,7 @@
 	  xhr.send();
 	}
 
-	function escapeHtml(unsafe){ // success is when goofs be trying to hack me
+	function escapeHtml(unsafe){ // when goofs be trying to hack me
 		return unsafe
 			 .replace(/&/g, "&amp;")
 			 .replace(/</g, "&lt;")
@@ -32,12 +32,16 @@
 			 .replace(/"/g, "&quot;")
 			 .replace(/'/g, "&#039;") || "";
 	}
-	function getAllContentNodes(element) {
+	function getAllContentNodes(element) { // takes an element.
 		var resp = "";
 		
+		if (!element) {return resp;}
+
 		if (!element.childNodes || !element.childNodes.length){
-			if (element.nodeType===3){
+			if (element.textContent){
 				return escapeHtml(element.textContent) || "";
+			} else {
+				return "";
 			}
 		}
 		
@@ -60,48 +64,54 @@
 	
 	
 	function processMessage(ele){
-		//console.log(ele);
-		var chatimg = "";
 		
-		var nameColor = "";
+		console.log(ele);
+		var chatimg = "";
+		try {
+			chatimg = ele.querySelector(".chat-avatar-img-holder img").src;
+		} catch(e){
+		}
+		
 		var name="";
 		try {
-			name = ele.querySelector(".channel-text").textContent.trim();
-			name = escapeHtml(name);
-			
-			var style = getComputedStyle(ele.querySelector(".channel-text"));
-			nameColor = style.color;
+			name = escapeHtml(ele.querySelector(".title-cell-name-holder").textContent.trim());
 		} catch(e){
-		//	console.warn(e);
 		}
-		
-		
+
 		var msg="";
 		try {
-			msg = getAllContentNodes(ele.querySelector("span[type^='body'][color='label/labelSecondary']"));
+			msg = getAllContentNodes(ele.querySelector(".tmg-live-video-react-chat-message"));
 		} catch(e){
-		//	console.warn(e);
 		}
 		
-		if (!name || !msg){
+		/*
+		var nameColor = "";
+		try {
+			nameColor = getComputedStyle(ele.querySelector(".chat-username")).color || "";
+		} catch(e){}
+		*/
+		
+		/*
+		if (!msg || !name)	{
 			return;
 		}
-		
+			*/
+
 		var data = {};
 		data.chatname = name;
-		data.nameColor = nameColor;
 		data.chatbadges = "";
 		data.backgroundColor = "";
 		data.textColor = "";
+		data.nameColor = "";
 		data.chatmessage = msg;
 		data.chatimg = chatimg;
 		data.hasDonation = "";
-		data.membership = "";;
+		data.membership = "";
 		data.contentimg = "";
 		data.textonly = settings.textonlymode || false;
-		data.type = "sooplive";
+		data.type = "meetme";
 		
-	//	console.log(data);
+		console.log(data);
 		
 		pushMessage(data);
 	}
@@ -128,7 +138,7 @@
 		function (request, sender, sendResponse) {
 			try{
 				if ("focusChat" == request){ // if (prev.querySelector('[id^="message-username-"]')){ //slateTextArea-
-					document.querySelector('[contenteditable="true"],textarea').focus();
+					document.querySelector("#TMGChatMessagesActionBar_TextInput").focus();
 					sendResponse(true);
 					return;
 				}
@@ -149,18 +159,19 @@
 	
 	
 	function onElementInserted(containerSelector) {
-		var target = document.body;
+		var target = document.querySelector(containerSelector);
 		if (!target){return;}
 		
 		
 		var onMutationsObserved = function(mutations) {
 			mutations.forEach(function(mutation) {
 				if (mutation.addedNodes.length) {
+					
 					for (var i = 0, len = mutation.addedNodes.length; i < len; i++) {
 						try {
 							if (mutation.addedNodes[i].skip){continue;}
 							mutation.addedNodes[i].skip = true;
-							processMessage(mutation.addedNodes[i]);
+							processMessage(mutation.addedNodes[i]); // just for debugging
 						} catch(e){}
 					}
 				}
@@ -176,8 +187,23 @@
 	
 	console.log("social stream injected");
 
-	setTimeout(function(){
-		onElementInserted(document.body);
-	},3000);
+	setInterval(function(){
+		try {
+		if (document.querySelector("[id*=ChatHistoryContainer_]")){
+			if (!document.querySelector("[id*=ChatHistoryContainer_]").marked){
+				document.querySelector("[id*=ChatHistoryContainer_]").marked=true;
+
+				console.log("CONNECTED chat detected");
+
+				setTimeout(function(){
+					document.querySelectorAll("[id*=ChatHistoryContainer_] div").forEach(ele=>{
+						ele.skip=true;
+						//processMessage(ele); //Debug Only; will load all old messages
+					});
+					onElementInserted("[id*=ChatHistoryContainer_]");
+				},1000);
+			}
+		}} catch(e){}
+	},2000);
 
 })();
