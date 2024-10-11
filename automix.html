@@ -39,6 +39,7 @@
 	<button id="startButton" onclick="loadIframes();">Start</button>
 	<button id="getLinkButton" onclick="getLink();">Create Link for OBS</button><br />
 	<a id="linkOut"></a>
+	<button id="openChatButton" onclick="openChatPopup();">Open Chat</button>
 	<script>
 	
 	(function(w) {
@@ -85,8 +86,6 @@
 		document.getElementById("body").style.display = "block";
 	}
 	
-	
-
 	function loadIframes(){  // this is pretty important if you want to avoid camera permission popup problems.  You can also call it automatically via: <body onload=>loadIframe();"> , but don't call it before the page loads.
 		var iframe = document.createElement("iframe");
 		var iframesrc = document.getElementById("viewlink").value;
@@ -174,7 +173,23 @@
 		document.getElementById("linkOut").innerHTML = outputLink;
 		document.getElementById("linkOut").href = outputLink;
 	}
-	
+
+	function openChatPopup() {
+		var chatPopup = window.open("popup_chat.html", "ChatPopup", "width=400,height=600");
+		chatPopup.onload = function() {
+			chatPopup.document.getElementById("chatInput").focus();
+		};
+	}
+
+	window.addEventListener("message", function(event) {
+		if (event.data.type === "chatMessage") {
+			var chatPopup = window.open("", "ChatPopup");
+			if (chatPopup) {
+				chatPopup.postMessage(event.data, "*");
+			}
+		}
+	});
+
 	</script>
 
 </body>
